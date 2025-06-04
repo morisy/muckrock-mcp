@@ -24,12 +24,17 @@ password = os.getenv("MUCKROCK_PASSWORD")
 logger.info(f"Environment check - MUCKROCK_USERNAME: {'Set' if username else 'Not set'}")
 logger.info(f"Environment check - MUCKROCK_PASSWORD: {'Set' if password else 'Not set'}")
 
+# Global variables for authentication state
+client = None
+current_username = None
+
 if username and password:
     logger.info(f"Using authenticated MuckRock access for user: {username}")
     client = MuckRock(username, password)
+    current_username = username
 else:
     logger.info("Using anonymous MuckRock access - some features will be limited")
-    logger.info("To enable authentication, set MUCKROCK_USERNAME and MUCKROCK_PASSWORD environment variables")
+    logger.info("Use the 'authenticate' tool to log in with your MuckRock credentials")
     client = MuckRock()
 
 # Create FastMCP server
@@ -54,6 +59,122 @@ def parse_request_response(response_url: str, title: str) -> dict:
             result["id"] = id_match.group(1)
     
     return result
+
+# AUTHENTICATION TOOL
+
+@mcp.tool()
+def authenticate(username: str, password: str) -> str:
+    """
+    Authenticate with MuckRock using your username and password.
+    
+    Args:
+        username: Your MuckRock username
+        password: Your MuckRock password
+    
+    Returns:
+        Authentication status message
+    """
+    global client
+    
+    try:
+        # Test authentication by creating a new client
+        test_client = MuckRock(username, password)
+        
+        # Try to access user info to verify credentials work
+        try:
+            user = test_client.users.me()
+            client = test_client  # Update global client
+            logger.info(f"Successfully authenticated as {username}")
+            
+            # Store username for status checks (but not password)
+            global current_username
+            current_username = username
+            
+            # Get user's organizations
+            orgs_info = ""
+            try:
+                orgs = client.organizations.list()
+                user_orgs = list(orgs)
+                if user_orgs:
+                    orgs_info = f"\n\n**Your Organizations:**\n"
+                    for org in user_orgs:
+                        orgs_info += f"- {org.name} (ID: {org.id})\n"
+            except:
+                pass
+            
+            return f"""✅ **Successfully authenticated!**
+
+**Username:** {user.username}
+**User ID:** {user.id}{orgs_info}
+
+You can now use all authenticated features including:
+- Filing FOIA requests
+- Viewing your requests
+- Managing organizations
+- Following up on requests"""
+            
+        except Exception as e:
+            return f"""❌ **Authentication failed**
+
+Please check your username and password. Common issues:
+- Incorrect username or password
+- Account may need email verification
+- API access may be restricted
+
+Error: {str(e)}"""
+            
+    except Exception as e:
+        return f"❌ **Authentication error:** {str(e)}"
+
+
+@mcp.tool()
+def check_auth_status() -> str:
+    """
+    Check current authentication status.
+    
+    Returns:
+        Current authentication status and available features
+    """
+    global client, current_username
+    
+    if hasattr(globals(), 'current_username') and current_username:
+        try:
+            # Try to get user info to verify still authenticated
+            user = client.users.me()
+            return f"""✅ **Authenticated as: {current_username}**
+
+All features are available including:
+- Filing FOIA requests
+- Viewing your requests
+- Managing organizations
+- Following up on requests
+
+To switch accounts, use the 'authenticate' tool with different credentials."""
+        except:
+            return """⚠️ **Authentication may have expired**
+
+Please re-authenticate using the 'authenticate' tool with your username and password."""
+    else:
+        return """❌ **Not authenticated**
+
+You are currently using anonymous access with limited features.
+
+**Available features (anonymous):**
+- Search public FOIA requests
+- View request details
+- Search agencies
+- View agency information
+
+**To unlock all features, authenticate with:**
+`authenticate(username="your_username", password="your_password")`
+
+**Features requiring authentication:**
+- File new FOIA requests
+- View your requests
+- Manage organizations
+- Send follow-ups
+- File appeals"""
+
 
 # ORIGINAL BASIC TOOLS
 

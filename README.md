@@ -16,6 +16,10 @@ An experimental Model Context Protocol (MCP) server for interacting with MuckRoc
 
 ## ✨ Features
 
+### 🔐 **Authentication**
+- **authenticate** - Securely log in with your MuckRock credentials
+- **check_auth_status** - Check current authentication status
+
 ### 🔍 **Search & Discovery**
 - **search_foia_requests** - Search existing FOIA requests by keyword
 - **search_agencies** - Find government agencies and their performance metrics
@@ -72,21 +76,33 @@ Add to your Claude Desktop config file (`~/Library/Application Support/Claude/cl
   "mcpServers": {
     "muckrock": {
       "command": "/path/to/python",
-      "args": ["/path/to/muckrock_server.py"],
-      "env": {
-        "MUCKROCK_USERNAME": "your_username",
-        "MUCKROCK_PASSWORD": "your_password"
-      }
+      "args": ["/path/to/muckrock_server.py"]
     }
   }
 }
 ```
 
+**Note:** You can optionally add credentials in the config, but it's more secure to authenticate interactively:
+```json
+"env": {
+  "MUCKROCK_USERNAME": "your_username",
+  "MUCKROCK_PASSWORD": "your_password"
+}
+```
+
 ### 4. **Test the Installation**
 
-Restart Claude Desktop and test with safe commands first:
-> **"Show me my MuckRock organizations"**
-> **"Search for agencies named 'test'"**
+Restart Claude Desktop and test with these commands:
+
+1. **Check authentication status:**
+   > "Check my MuckRock authentication status"
+
+2. **Authenticate (if needed):**
+   > "Authenticate with MuckRock using username 'myusername' and password 'mypassword'"
+
+3. **Test with safe commands:**
+   > "Show me my MuckRock organizations"
+   > "Search for agencies named 'test'"
 
 ⚠️ **ALWAYS TEST WITH TEST AGENCIES FIRST** (Agency ID: 248 is MuckRock's test agency)
 
