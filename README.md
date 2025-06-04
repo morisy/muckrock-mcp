@@ -1,6 +1,6 @@
 # 🔍 MuckRock MCP Server
 
-A comprehensive Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ professional-grade tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
+A comprehensive Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ ~professional-grade~ highly experimental, unstable, and insecure tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
 
 ## ✨ Features
 
