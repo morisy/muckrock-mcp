@@ -2,7 +2,7 @@
 
 ⚠️ **EXPERIMENTAL SOFTWARE - USE AT YOUR OWN RISK** ⚠️
 
-An experimental Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ highly experimental, unstable, and potentially insecure tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
+An experimental Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ highly experimental, unstable, and ~potentially~ definitely insecure tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
 
 ## ⚠️ Important Disclaimers
 
