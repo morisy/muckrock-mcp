@@ -2,7 +2,7 @@
 
 ⚠️ **EXPERIMENTAL SOFTWARE - USE AT YOUR OWN RISK** ⚠️
 
-An experimental Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ highly experimental, unstable, and ~potentially~ definitely insecure tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
+An experimental Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides basic tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
 
 ## ⚠️ Important Disclaimers
 
@@ -29,26 +29,15 @@ An experimental Model Context Protocol (MCP) server for interacting with MuckRoc
 - **get_agency_details** - Detailed agency information including response times
 - **get_foia_details** - Comprehensive request details and communications
 
-### 📝 **Smart Request Filing**
-- **file_foia_request_simple** - Smart filing with automatic organization selection
-- **draft_foia_request** - AI-powered professional request drafting
-- **analyze_filing_strategy** - Multi-agency strategic recommendations
+### 📝 **Request Filing**
+- **file_foia_request_simple** - File FOIA requests with automatic organization selection
 
 ### 📊 **Request Management**
 - **get_my_requests** - View your FOIA requests with status filtering
 - **get_my_organizations** - List your organizations and filing options
 - **get_request_communications** - View all communications for a request
 - **follow_up_on_request** - Send follow-up messages on existing requests
-
-### ⚖️ **Legal & Compliance Tools**
-- **monitor_compliance** - Automated deadline tracking with legal precedents
-- **generate_appeal_letter** - Professional appeals with case law citations
 - **appeal_request** - File appeals for rejected or partial grants
-- **estimate_foia_costs** - Accurate fee predictions and optimization strategies
-
-### 📈 **Analytics & Strategy**
-- **track_request_patterns** - Success factor analysis by topic
-- **create_foia_campaign** - Multi-agency coordination tools
 - **get_request_cost** - Fee information and payment status
 
 ## 🚀 Quick Start
@@ -132,52 +121,44 @@ Restart Claude Desktop and test with these commands:
 Once configured, you can use natural language to interact with MuckRock:
 
 ```
-"Draft a FOIA request for police contracts from 2020-2024"
-"File a request to EPA asking for climate change documents"
+"File a FOIA request to EPA asking for climate change documents"
 "Show me my pending FOIA requests"
-"Monitor compliance for request 12345"
-"Generate an appeal letter for a b(5) exemption denial"
-"Analyze filing strategy for environmental records"
+"Search for agencies that handle environmental data"
+"Get details about my request #12345"
+"Follow up on my pending request"
 ```
 
-### **FOIA Assistant Capabilities** (Experimental)
+### **Basic FOIA Capabilities**
 
-The server attempts to provide assistance with:
+The server provides basic assistance with:
 
-1. **Request Drafting**: Generate FOIA request language (review before using)
-2. **Planning Tools**: Basic agency and timing recommendations
-3. **Deadline Tracking**: Monitor request deadlines (verify independently)
-4. **Cost Estimates**: Rough fee predictions (actual costs may vary)
-5. **Appeal Templates**: Basic appeal letter generation
-6. **Campaign Planning**: Multi-agency coordination concepts
+1. **Request Filing**: File FOIA requests to government agencies
+2. **Request Tracking**: View and monitor your submitted requests
+3. **Agency Search**: Find government agencies and their contact information
+4. **Organization Management**: Manage which organization to file requests under
+5. **Communications**: View messages and follow up on existing requests
 
-## 🔧 Advanced Features
+## 🔧 Basic Features
 
-### **Multi-Agency Filing Strategy**
+### **Request Filing**
 ```python
-# The server can recommend comprehensive filing strategies
-analyze_filing_strategy(
-    topic="government AI contracts",
-    document_types=["contracts", "emails", "reports"],
-    geographic_scope="national"
+# File a FOIA request to one or more agencies
+file_foia_request_simple(
+    title="Environmental Data Request",
+    requested_docs="All reports on air quality from 2023",
+    agency_ids=[EPA_AGENCY_ID]
 )
 ```
 
-### **Legal Compliance Monitoring**
+### **Request Management**
 ```python
-# Automated deadline tracking with legal precedents
-monitor_compliance(
-    foia_id=12345,
-    check_precedents=True
-)
-```
+# View your submitted requests
+get_my_requests(status="pending")
 
-### **Professional Appeal Generation**
-```python
-# Generate appeals with case law citations
-generate_appeal_letter(
+# Follow up on a specific request
+follow_up_on_request(
     foia_id=12345,
-    denial_reasons=["b(5) deliberative process", "b(6) personal privacy"]
+    message="Requesting status update on my pending request"
 )
 ```
 
@@ -191,7 +172,7 @@ muckrock-mcp/
 ├── .gitignore                      # Git ignore rules
 ├── AUTHENTICATION_SETUP.md         # Authentication guide
 ├── MCP_SERVER_README.md            # Technical documentation
-├── FOIA_ASSISTANT_USE_CASES.md     # Comprehensive usage examples
+├── FOIA_ASSISTANT_USE_CASES.md     # Usage examples
 └── DEPLOYMENT_SUMMARY.md           # Deployment guide
 ```
 
@@ -225,29 +206,28 @@ muckrock-mcp/
    - Share screenshots with passwords visible
    - Use production credentials for testing
 
-## 🎓 FOIA Best Practices (Attempted)
+## 📝 FOIA Usage Notes
 
-The server attempts to incorporate FOIA best practices, but **always verify**:
+When using this tool:
 
-- **Request Language**: Templates provided - review and customize before filing
-- **Fee Waivers**: Basic fee waiver language included - may need adjustment
-- **Timing Suggestions**: General recommendations - use your judgment
-- **Multi-Agency Tools**: Experimental coordination features
-- **Deadline Tracking**: Basic monitoring - maintain your own calendar
-- **Appeal Templates**: Starting points only - consult legal resources
+- **Review all requests** before filing - the tool does not generate request text
+- **Verify agency information** independently - agency data may be outdated  
+- **Track deadlines yourself** - no automated deadline monitoring
+- **Consult FOIA resources** for legal requirements and best practices
+- **Test with test agencies first** - always verify functionality before real use
 
 ⚠️ **IMPORTANT**: This tool is not a substitute for legal advice or professional FOIA expertise
 
 ## 🐛 Known Issues & Limitations
 
-- **Campaign Tool**: Currently only creates plans, doesn't actually file requests
 - **Error Handling**: Limited error handling for API failures
 - **Token Refresh**: May need to restart if authentication tokens expire
 - **Rate Limiting**: No built-in rate limit handling
 - **Input Validation**: Minimal validation of user inputs
 - **Agency Search**: Returns limited results, may miss some agencies
 - **File Downloads**: Only provides URLs, doesn't download files
-- **Appeal Filing**: Conceptual implementation, may not work with current API
+- **Appeal Filing**: Basic implementation, may not work reliably
+- **Follow-ups**: Conceptual implementation, verify functionality before use
 
 ## 🛠️ Development
 
