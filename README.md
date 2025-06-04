@@ -1,6 +1,18 @@
 # 🔍 MuckRock MCP Server
 
-A comprehensive Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ ~professional-grade~ highly experimental, unstable, and insecure tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
+⚠️ **EXPERIMENTAL SOFTWARE - USE AT YOUR OWN RISK** ⚠️
+
+An experimental Model Context Protocol (MCP) server for interacting with MuckRock's FOIA platform. This server provides 20+ highly experimental, unstable, and potentially insecure tools for filing, tracking, and managing Freedom of Information Act (FOIA) requests.
+
+## ⚠️ Important Disclaimers
+
+- **ALPHA QUALITY**: This code is experimental and likely contains bugs
+- **SECURITY**: Not audited for security - do not use in production without review
+- **AUTHENTICATION**: Credentials are passed as environment variables - ensure proper security measures
+- **NO WARRANTY**: This software comes with no guarantees or warranties
+- **TEST FIRST**: Always test with test agencies before filing real requests
+- **RATE LIMITS**: Be mindful of MuckRock's API rate limits
+- **UNSTABLE**: APIs and functionality may change or break without notice
 
 ## ✨ Features
 
@@ -41,8 +53,8 @@ A comprehensive Model Context Protocol (MCP) server for interacting with MuckRoc
 pip install fastmcp muckrock
 
 # Clone this repository
-git clone https://github.com/your-username/mcp-muckrock-agent.git
-cd mcp-muckrock-agent
+git clone https://github.com/morisy/muckrock-mcp.git
+cd muckrock-mcp
 ```
 
 ### 2. **MuckRock Account Setup**
@@ -72,8 +84,11 @@ Add to your Claude Desktop config file (`~/Library/Application Support/Claude/cl
 
 ### 4. **Test the Installation**
 
-Restart Claude Desktop and try:
+Restart Claude Desktop and test with safe commands first:
 > **"Show me my MuckRock organizations"**
+> **"Search for agencies named 'test'"**
+
+⚠️ **ALWAYS TEST WITH TEST AGENCIES FIRST** (Agency ID: 248 is MuckRock's test agency)
 
 ## 🎯 Example Usage
 
@@ -90,16 +105,16 @@ Once configured, you can use natural language to interact with MuckRock:
 "Analyze filing strategy for environmental records"
 ```
 
-### **Professional FOIA Assistant**
+### **FOIA Assistant Capabilities** (Experimental)
 
-The server acts as a professional FOIA assistant that can:
+The server attempts to provide assistance with:
 
-1. **Draft Professional Requests**: Generate legally compliant FOIA language
-2. **Strategic Planning**: Recommend optimal agencies and timing
-3. **Compliance Monitoring**: Track deadlines and suggest legal actions
-4. **Cost Optimization**: Predict fees and suggest reduction strategies
-5. **Appeal Generation**: Create appeals with relevant case law
-6. **Campaign Management**: Coordinate multi-agency investigations
+1. **Request Drafting**: Generate FOIA request language (review before using)
+2. **Planning Tools**: Basic agency and timing recommendations
+3. **Deadline Tracking**: Monitor request deadlines (verify independently)
+4. **Cost Estimates**: Rough fee predictions (actual costs may vary)
+5. **Appeal Templates**: Basic appeal letter generation
+6. **Campaign Planning**: Multi-agency coordination concepts
 
 ## 🔧 Advanced Features
 
@@ -134,34 +149,51 @@ generate_appeal_letter(
 ## 📁 File Structure
 
 ```
-mcp-muckrock-agent/
-├── muckrock_server.py          # Main MCP server
-├── README.md                   # This file
-├── requirements.txt            # Python dependencies
-├── .gitignore                  # Git ignore rules
-├── AUTHENTICATION_SETUP.md     # Authentication guide
-├── MCP_SERVER_README.md        # Technical documentation
-└── FOIA_ASSISTANT_USE_CASES.md # Usage examples
+muckrock-mcp/
+├── muckrock_server.py              # Main MCP server using FastMCP framework
+├── main.py                         # Alternative example using lastmile-ai MCP Agent framework
+├── README.md                       # This file
+├── requirements.txt                # Python dependencies
+├── .gitignore                      # Git ignore rules
+├── mcp_agent.secrets.yaml.example  # Example secrets for MCP Agent framework
+├── AUTHENTICATION_SETUP.md         # Authentication guide
+├── MCP_SERVER_README.md            # Technical documentation
+├── FOIA_ASSISTANT_USE_CASES.md     # Comprehensive usage examples
+└── DEPLOYMENT_SUMMARY.md           # Deployment guide
 ```
 
-## 🔐 Security & Privacy
+## 🔐 Security Considerations
 
-- ✅ Credentials are stored securely in environment variables
-- ✅ No hardcoded passwords or tokens in the code
-- ✅ Communications encrypted via HTTPS to MuckRock API
-- ✅ Local processing - no data sent to third parties
-- ✅ Comprehensive .gitignore to prevent credential commits
+- ⚠️ **NOT SECURITY AUDITED** - Review code before using with real credentials
+- 🔑 Credentials stored in environment variables (ensure proper permissions)
+- 🔒 Uses HTTPS for MuckRock API communications
+- 💾 Local processing only (no third-party data sharing)
+- 📝 .gitignore configured to avoid credential commits
+- ⚠️ **PROTECT YOUR CREDENTIALS** - Never share config files with auth info
 
-## 🎓 FOIA Best Practices Built-In
+## 🎓 FOIA Best Practices (Attempted)
 
-The server incorporates FOIA best practices:
+The server attempts to incorporate FOIA best practices, but **always verify**:
 
-- **Professional Language**: Generates legally compliant request language
-- **Fee Optimization**: Built-in fee waiver language and cost reduction strategies  
-- **Strategic Timing**: Recommendations for optimal filing timing
-- **Multi-Agency Coordination**: Tools for comprehensive investigations
-- **Legal Compliance**: Deadline tracking with relevant case law
-- **Appeal Strategies**: Professional appeals with legal precedents
+- **Request Language**: Templates provided - review and customize before filing
+- **Fee Waivers**: Basic fee waiver language included - may need adjustment
+- **Timing Suggestions**: General recommendations - use your judgment
+- **Multi-Agency Tools**: Experimental coordination features
+- **Deadline Tracking**: Basic monitoring - maintain your own calendar
+- **Appeal Templates**: Starting points only - consult legal resources
+
+⚠️ **IMPORTANT**: This tool is not a substitute for legal advice or professional FOIA expertise
+
+## 🐛 Known Issues & Limitations
+
+- **Campaign Tool**: Currently only creates plans, doesn't actually file requests
+- **Error Handling**: Limited error handling for API failures
+- **Token Refresh**: May need to restart if authentication tokens expire
+- **Rate Limiting**: No built-in rate limit handling
+- **Input Validation**: Minimal validation of user inputs
+- **Agency Search**: Returns limited results, may miss some agencies
+- **File Downloads**: Only provides URLs, doesn't download files
+- **Appeal Filing**: Conceptual implementation, may not work with current API
 
 ## 🛠️ Development
 
@@ -215,10 +247,11 @@ MIT License - see LICENSE file for details.
 ## 🎉 Credits
 
 Built with:
-- [FastMCP](https://github.com/pydantic/fastmcp) - MCP server framework
+- [FastMCP](https://github.com/pydantic/fastmcp) - MCP server framework (used in muckrock_server.py)
+- [MCP Agent](https://github.com/lastmile-ai/mcp-agent) - MCP Agent framework (used in main.py example)
 - [MuckRock Python API](https://python-muckrock.readthedocs.io/) - API wrapper
 - [Claude Code](https://claude.ai/code) - Development assistance
 
 ---
 
-**Transform your FOIA research with professional-grade tools! 🚀**
+**Use at your own risk - this is experimental software! 🚧**
