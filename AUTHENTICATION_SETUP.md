@@ -35,8 +35,9 @@ python muckrock_server.py
 
 ### Getting MuckRock Credentials
 1. Sign up at https://www.muckrock.com/accounts/signup/
-2. Go to your account settings to find your API credentials
-3. Or use your regular login username/password
+2. Use your MuckRock username and password for authentication
+3. The MuckRock Python library will automatically handle token generation and rotation
+4. No static API key needed - the library manages temporary tokens internally
 
 ## 🚀 Smart Filing Features
 

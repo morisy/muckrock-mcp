@@ -19,13 +19,15 @@ class MuckRockAgent:
     public records requests, agencies, and jurisdictions.
     """
     
-    def __init__(self, app: MCPApp, api_token: Optional[str] = None):
+    def __init__(self, app: MCPApp, username: Optional[str] = None, password: Optional[str] = None):
         self.app = app
         self.logger = None
         self.context = None
-        self.api_token = api_token or os.getenv("MUCKROCK_API_TOKEN")
-        if self.api_token:
-            self.client = MuckRock(token=self.api_token)
+        self.username = username or os.getenv("MUCKROCK_USERNAME")
+        self.password = password or os.getenv("MUCKROCK_PASSWORD")
+        
+        if self.username and self.password:
+            self.client = MuckRock(self.username, self.password)
         else:
             self.client = MuckRock()  # Anonymous access
     
