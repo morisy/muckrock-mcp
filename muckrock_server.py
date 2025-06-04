@@ -20,11 +20,16 @@ logger = logging.getLogger(__name__)
 username = os.getenv("MUCKROCK_USERNAME")
 password = os.getenv("MUCKROCK_PASSWORD")
 
+# Debug logging to check environment variables
+logger.info(f"Environment check - MUCKROCK_USERNAME: {'Set' if username else 'Not set'}")
+logger.info(f"Environment check - MUCKROCK_PASSWORD: {'Set' if password else 'Not set'}")
+
 if username and password:
-    logger.info("Using authenticated MuckRock access")
+    logger.info(f"Using authenticated MuckRock access for user: {username}")
     client = MuckRock(username, password)
 else:
     logger.info("Using anonymous MuckRock access - some features will be limited")
+    logger.info("To enable authentication, set MUCKROCK_USERNAME and MUCKROCK_PASSWORD environment variables")
     client = MuckRock()
 
 # Create FastMCP server
