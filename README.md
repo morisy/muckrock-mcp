@@ -49,12 +49,12 @@ An experimental Model Context Protocol (MCP) server for interacting with MuckRoc
 ### 1. **Installation**
 
 ```bash
-# Install dependencies
-pip install fastmcp muckrock
-
 # Clone this repository
 git clone https://github.com/morisy/muckrock-mcp.git
 cd muckrock-mcp
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
 ### 2. **MuckRock Account Setup**
@@ -151,11 +151,9 @@ generate_appeal_letter(
 ```
 muckrock-mcp/
 ├── muckrock_server.py              # Main MCP server using FastMCP framework
-├── main.py                         # Alternative example using lastmile-ai MCP Agent framework
 ├── README.md                       # This file
 ├── requirements.txt                # Python dependencies
 ├── .gitignore                      # Git ignore rules
-├── mcp_agent.secrets.yaml.example  # Example secrets for MCP Agent framework
 ├── AUTHENTICATION_SETUP.md         # Authentication guide
 ├── MCP_SERVER_README.md            # Technical documentation
 ├── FOIA_ASSISTANT_USE_CASES.md     # Comprehensive usage examples
@@ -247,8 +245,7 @@ MIT License - see LICENSE file for details.
 ## 🎉 Credits
 
 Built with:
-- [FastMCP](https://github.com/pydantic/fastmcp) - MCP server framework (used in muckrock_server.py)
-- [MCP Agent](https://github.com/lastmile-ai/mcp-agent) - MCP Agent framework (used in main.py example)
+- [FastMCP](https://github.com/pydantic/fastmcp) - MCP server framework
 - [MuckRock Python API](https://python-muckrock.readthedocs.io/) - API wrapper
 - [Claude Code](https://claude.ai/code) - Development assistance
 
