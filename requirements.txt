@@ -1,0 +1,9 @@
+# MuckRock Python wrapper
+python-muckrock>=0.2.0
+
+# MCP Agent framework (should be installed from the parent project)
+# mcp-agent
+
+# Additional dependencies that might be needed
+requests>=2.31.0
+pydantic>=2.0.0
