@@ -86,10 +86,77 @@ username, password = get_credentials()
 # Global variables for authentication state
 client = None
 current_username = None
+stored_username = None
+stored_password = None
+
+def refresh_client():
+    """Refresh the MuckRock client with stored credentials."""
+    global client, current_username, stored_username, stored_password
+    
+    if stored_username and stored_password:
+        try:
+            logger.info("Refreshing MuckRock client credentials...")
+            client = MuckRock(stored_username, stored_password)
+            current_username = stored_username
+            # Test the refreshed client
+            user = client.users.me()
+            logger.info(f"Successfully refreshed authentication for: {user.username}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to refresh authentication: {str(e)}")
+            return False
+    return False
+
+def ensure_authenticated():
+    """Ensure the client is authenticated, refresh if needed."""
+    global client, current_username
+    
+    if not current_username:
+        return False
+        
+    try:
+        # Test current authentication
+        client.users.me()
+        return True
+    except Exception as e:
+        logger.warning(f"Authentication test failed, attempting refresh: {str(e)}")
+        # Try to refresh
+        if refresh_client():
+            return True
+        else:
+            logger.error("Failed to refresh authentication")
+            return False
+
+def with_auth_retry(func):
+    """Decorator to automatically retry API calls with authentication refresh."""
+    def wrapper(*args, **kwargs):
+        try:
+            # First attempt
+            return func(*args, **kwargs)
+        except Exception as e:
+            # If it's an auth error, try refreshing
+            if "auth" in str(e).lower() or "token" in str(e).lower() or "401" in str(e):
+                logger.warning(f"API call failed with potential auth error, refreshing: {str(e)}")
+                if ensure_authenticated():
+                    try:
+                        # Retry after refresh
+                        return func(*args, **kwargs)
+                    except Exception as retry_e:
+                        logger.error(f"API call failed even after auth refresh: {str(retry_e)}")
+                        raise retry_e
+                else:
+                    logger.error("Authentication refresh failed")
+                    raise e
+            else:
+                # Not an auth error, re-raise original exception
+                raise e
+    return wrapper
 
 if username and password:
     client = MuckRock(username, password)
     current_username = username
+    stored_username = username
+    stored_password = password
     logger.info(f"Server starting with authenticated access for: {username}")
 else:
     client = MuckRock()
@@ -129,10 +196,10 @@ def check_auth_status() -> str:
     global client, current_username
     
     if current_username:
-        try:
-            # Try to get user info to verify still authenticated
-            user = client.users.me()
-            return f"""✅ **Authenticated as: {current_username}**
+        if ensure_authenticated():
+            try:
+                user = client.users.me()
+                return f"""✅ **Authenticated as: {current_username}**
 
 All features are available including:
 - Filing FOIA requests
@@ -140,11 +207,21 @@ All features are available including:
 - Managing organizations
 - Following up on requests
 
-Authentication was set up when the server started."""
-        except:
-            return """⚠️ **Authentication may have expired**
+Authentication is active and automatically refreshed as needed."""
+            except Exception as e:
+                return f"""⚠️ **Authentication issue**
 
-Server was started with authentication, but the session may have expired.
+Unable to verify authentication: {str(e)}
+This is unusual - please restart the server if the problem persists."""
+        else:
+            return """❌ **Authentication failed**
+
+Server was started with authentication, but credentials are no longer valid.
+This may be due to:
+- Expired session tokens that couldn't be refreshed
+- Changed password
+- Account access issues
+
 Restart the server to re-authenticate."""
     else:
         return """❌ **Not authenticated**
@@ -255,8 +332,11 @@ def search_agencies(query: str, limit: int = 10) -> str:
 @mcp.tool()
 def get_my_user_info() -> str:
     """Get current user information including organizations."""
-    if not username or not password:
-        return "Error: Getting user info requires authentication."
+    if not current_username:
+        return "Error: Getting user info requires authentication. Server was started in anonymous mode."
+    
+    if not ensure_authenticated():
+        return "Error: Authentication has expired and could not be refreshed. Please restart the server."
     
     try:
         user = client.users.me()
@@ -287,8 +367,11 @@ def get_my_user_info() -> str:
 @mcp.tool()
 def get_my_organizations() -> str:
     """Get all organizations the current user belongs to."""
-    if not username or not password:
-        return "Error: Getting organizations requires authentication."
+    if not current_username:
+        return "Error: Getting organizations requires authentication. Server was started in anonymous mode."
+    
+    if not ensure_authenticated():
+        return "Error: Authentication has expired and could not be refreshed. Please restart the server."
     
     try:
         orgs = client.organizations.list()
@@ -328,8 +411,11 @@ def file_foia_request_simple(
     request_fee_waiver: bool = True
 ) -> str:
     """File a new FOIA request with automatic organization selection."""
-    if not username or not password:
-        return "Error: Filing requests requires authentication."
+    if not current_username:
+        return "Error: Filing requests requires authentication. Server was started in anonymous mode."
+    
+    if not ensure_authenticated():
+        return "Error: Authentication has expired and could not be refreshed. Please restart the server."
     
     try:
         # Get user's available organizations
