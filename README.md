@@ -17,7 +17,10 @@ An experimental Model Context Protocol (MCP) server for interacting with MuckRoc
 ## ✨ Features
 
 ### 🔐 **Authentication**
-- **authenticate** - Securely log in with your MuckRock credentials
+- **authenticate** - Log in with your MuckRock credentials (direct method)
+- **set_username** - Set username separately (more secure - step 1)
+- **authenticate_with_env_password** - Authenticate using environment variable (step 2)
+- **authenticate_with_password_file** - Authenticate using password file (step 2)
 - **check_auth_status** - Check current authentication status
 
 ### 🔍 **Search & Discovery**
@@ -98,6 +101,22 @@ Restart Claude Desktop and test with these commands:
    > "Check my MuckRock authentication status"
 
 2. **Authenticate (if needed):**
+   
+   **Option A - Environment Variable (Most Secure):**
+   ```bash
+   # In terminal before starting server:
+   export MUCKROCK_PASSWORD="your_password"
+   ```
+   Then in Claude:
+   > "Set my MuckRock username to 'myusername'"
+   > "Authenticate with environment password"
+   
+   **Option B - Password File:**
+   Save password in a file, then in Claude:
+   > "Set my MuckRock username to 'myusername'"
+   > "Authenticate with password file at /path/to/password.txt"
+   
+   **Option C - Direct (Less Secure):**
    > "Authenticate with MuckRock using username 'myusername' and password 'mypassword'"
 
 3. **Test with safe commands:**
@@ -179,11 +198,32 @@ muckrock-mcp/
 ## 🔐 Security Considerations
 
 - ⚠️ **NOT SECURITY AUDITED** - Review code before using with real credentials
-- 🔑 Credentials stored in environment variables (ensure proper permissions)
+- 🔑 Multiple authentication methods with varying security levels
 - 🔒 Uses HTTPS for MuckRock API communications
 - 💾 Local processing only (no third-party data sharing)
 - 📝 .gitignore configured to avoid credential commits
 - ⚠️ **PROTECT YOUR CREDENTIALS** - Never share config files with auth info
+
+### **Authentication Security Best Practices:**
+
+1. **Most Secure - Environment Variable:**
+   - Set `MUCKROCK_PASSWORD` in terminal before starting
+   - Password never appears in Claude chat
+   - Cleared when terminal session ends
+
+2. **Secure - Password File:**
+   - Store password in a protected file
+   - Set file permissions: `chmod 600 password.txt`
+   - Delete file after use
+
+3. **Least Secure - Direct Input:**
+   - Password visible in Claude chat history
+   - Only use for testing with non-sensitive accounts
+
+4. **Never:**
+   - Store passwords in git repositories
+   - Share screenshots with passwords visible
+   - Use production credentials for testing
 
 ## 🎓 FOIA Best Practices (Attempted)
 

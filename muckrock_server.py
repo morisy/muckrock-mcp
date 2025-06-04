@@ -27,6 +27,7 @@ logger.info(f"Environment check - MUCKROCK_PASSWORD: {'Set' if password else 'No
 # Global variables for authentication state
 client = None
 current_username = None
+pending_username = None
 
 if username and password:
     logger.info(f"Using authenticated MuckRock access for user: {username}")
@@ -123,6 +124,158 @@ Please check your username and password. Common issues:
 
 Error: {str(e)}"""
             
+    except Exception as e:
+        return f"❌ **Authentication error:** {str(e)}"
+
+
+@mcp.tool()
+def set_username(username: str) -> str:
+    """
+    Set your MuckRock username (step 1 of 2 for authentication).
+    
+    Args:
+        username: Your MuckRock username
+    
+    Returns:
+        Instructions for next step
+    """
+    global pending_username
+    pending_username = username
+    
+    return f"""✅ Username set: {username}
+
+Now provide your password using one of these methods:
+
+**Option 1 - Direct (less secure):**
+Use the 'authenticate' tool with your username and password
+
+**Option 2 - Environment variable (recommended):**
+Set your password in the terminal before starting the server:
+```
+export MUCKROCK_PASSWORD="your_password"
+```
+Then use: `authenticate_with_env_password()`
+
+**Option 3 - Password file:**
+Save your password in a file and use:
+`authenticate_with_password_file("/path/to/password.txt")`"""
+
+
+@mcp.tool()
+def authenticate_with_env_password() -> str:
+    """
+    Authenticate using the username you set and password from MUCKROCK_PASSWORD environment variable.
+    
+    Returns:
+        Authentication status message
+    """
+    global client, current_username, pending_username
+    
+    if not hasattr(globals(), 'pending_username') or not pending_username:
+        return "❌ Please set your username first using the 'set_username' tool"
+    
+    password = os.getenv("MUCKROCK_PASSWORD")
+    if not password:
+        return """❌ No password found in environment variable.
+
+Please set your password:
+```bash
+export MUCKROCK_PASSWORD="your_password"
+```
+Then restart the server or try again."""
+    
+    # Use the existing authenticate logic
+    try:
+        test_client = MuckRock(pending_username, password)
+        try:
+            user = test_client.users.me()
+            client = test_client
+            current_username = pending_username
+            pending_username = None  # Clear pending username
+            
+            logger.info(f"Successfully authenticated as {current_username}")
+            
+            # Get organizations info
+            orgs_info = ""
+            try:
+                orgs = client.organizations.list()
+                user_orgs = list(orgs)
+                if user_orgs:
+                    orgs_info = f"\n\n**Your Organizations:**\n"
+                    for org in user_orgs:
+                        orgs_info += f"- {org.name} (ID: {org.id})\n"
+            except:
+                pass
+            
+            return f"""✅ **Successfully authenticated!**
+
+**Username:** {user.username}
+**User ID:** {user.id}{orgs_info}
+
+Password was read from environment variable (not shown).
+You can now use all authenticated features."""
+            
+        except Exception as e:
+            return f"❌ **Authentication failed:** {str(e)}"
+    except Exception as e:
+        return f"❌ **Authentication error:** {str(e)}"
+
+
+@mcp.tool()
+def authenticate_with_password_file(password_file_path: str) -> str:
+    """
+    Authenticate using the username you set and password from a file.
+    
+    Args:
+        password_file_path: Path to file containing your password
+    
+    Returns:
+        Authentication status message
+    """
+    global client, current_username, pending_username
+    
+    if not hasattr(globals(), 'pending_username') or not pending_username:
+        return "❌ Please set your username first using the 'set_username' tool"
+    
+    try:
+        with open(password_file_path, 'r') as f:
+            password = f.read().strip()
+    except Exception as e:
+        return f"❌ Could not read password file: {str(e)}"
+    
+    # Use the existing authenticate logic
+    try:
+        test_client = MuckRock(pending_username, password)
+        try:
+            user = test_client.users.me()
+            client = test_client
+            current_username = pending_username
+            pending_username = None  # Clear pending username
+            
+            logger.info(f"Successfully authenticated as {current_username}")
+            
+            # Get organizations info
+            orgs_info = ""
+            try:
+                orgs = client.organizations.list()
+                user_orgs = list(orgs)
+                if user_orgs:
+                    orgs_info = f"\n\n**Your Organizations:**\n"
+                    for org in user_orgs:
+                        orgs_info += f"- {org.name} (ID: {org.id})\n"
+            except:
+                pass
+            
+            return f"""✅ **Successfully authenticated!**
+
+**Username:** {user.username}
+**User ID:** {user.id}{orgs_info}
+
+Password was read from file: {password_file_path}
+You can now use all authenticated features."""
+            
+        except Exception as e:
+            return f"❌ **Authentication failed:** {str(e)}"
     except Exception as e:
         return f"❌ **Authentication error:** {str(e)}"
 
