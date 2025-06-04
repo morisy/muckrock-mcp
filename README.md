@@ -17,10 +17,6 @@ An experimental Model Context Protocol (MCP) server for interacting with MuckRoc
 ## ✨ Features
 
 ### 🔐 **Authentication**
-- **authenticate** - Log in with your MuckRock credentials (direct method)
-- **set_username** - Set username separately (more secure - step 1)
-- **authenticate_with_env_password** - Authenticate using environment variable (step 2)
-- **authenticate_with_password_file** - Authenticate using password file (step 2)
 - **check_auth_status** - Check current authentication status
 
 ### 🔍 **Search & Discovery**
@@ -74,7 +70,12 @@ Add to your Claude Desktop config file (`~/Library/Application Support/Claude/cl
 }
 ```
 
-**Note:** You can optionally add credentials in the config, but it's more secure to authenticate interactively:
+**Authentication Options:**
+
+**Option A - Interactive Prompt (Recommended):**
+The server will prompt for credentials when it starts. This is the most secure method.
+
+**Option B - Environment Variables:**
 ```json
 "env": {
   "MUCKROCK_USERNAME": "your_username",
@@ -82,33 +83,34 @@ Add to your Claude Desktop config file (`~/Library/Application Support/Claude/cl
 }
 ```
 
-### 4. **Test the Installation**
+### 4. **Start the Server**
 
-Restart Claude Desktop and test with these commands:
+When you restart Claude Desktop, the MuckRock server will start and prompt for authentication:
+
+```
+============================================================
+🔍 MuckRock MCP Server - Authentication Setup
+============================================================
+To use authenticated features, please provide your MuckRock credentials.
+Press Enter without typing to skip authentication (anonymous mode).
+
+MuckRock Username: your_username
+MuckRock Password: [hidden]
+Testing credentials...
+✅ Successfully authenticated as: your_username
+📋 Found 2 organization(s):
+   - Your Organization (ID: 12345)
+   - Test Org (ID: 67890)
+```
+
+### 5. **Test the Installation**
+
+Test with these commands in Claude:
 
 1. **Check authentication status:**
    > "Check my MuckRock authentication status"
 
-2. **Authenticate (if needed):**
-   
-   **Option A - Environment Variable (Most Secure):**
-   ```bash
-   # In terminal before starting server:
-   export MUCKROCK_PASSWORD="your_password"
-   ```
-   Then in Claude:
-   > "Set my MuckRock username to 'myusername'"
-   > "Authenticate with environment password"
-   
-   **Option B - Password File:**
-   Save password in a file, then in Claude:
-   > "Set my MuckRock username to 'myusername'"
-   > "Authenticate with password file at /path/to/password.txt"
-   
-   **Option C - Direct (Less Secure):**
-   > "Authenticate with MuckRock using username 'myusername' and password 'mypassword'"
-
-3. **Test with safe commands:**
+2. **Test basic functions:**
    > "Show me my MuckRock organizations"
    > "Search for agencies named 'test'"
 
@@ -187,24 +189,22 @@ muckrock-mcp/
 
 ### **Authentication Security Best Practices:**
 
-1. **Most Secure - Environment Variable:**
-   - Set `MUCKROCK_PASSWORD` in terminal before starting
-   - Password never appears in Claude chat
-   - Cleared when terminal session ends
+1. **Most Secure - Interactive Prompt (Default):**
+   - Server prompts for credentials at startup
+   - Passwords never appear in Claude chat
+   - Uses getpass for hidden password input
+   - Credentials only exist during server session
 
-2. **Secure - Password File:**
-   - Store password in a protected file
-   - Set file permissions: `chmod 600 password.txt`
-   - Delete file after use
+2. **Secure - Environment Variables:**
+   - Set before starting Claude Desktop
+   - No interactive prompts needed
+   - Credentials cleared when session ends
 
-3. **Least Secure - Direct Input:**
-   - Password visible in Claude chat history
-   - Only use for testing with non-sensitive accounts
-
-4. **Never:**
+3. **Never:**
    - Store passwords in git repositories
    - Share screenshots with passwords visible
    - Use production credentials for testing
+   - Input credentials through Claude chat interface
 
 ## 📝 FOIA Usage Notes
 
